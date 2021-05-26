@@ -16,7 +16,12 @@ public class PlayerController : MonoBehaviour
     {
         move.x = Input.GetAxis("Horizontal");
         move.y = Input.GetAxis("Vertical");
-        transform.position = new Vector2(Mathf.Clamp(rb.position.x, -10.1f, 10.1f), Mathf.Clamp(rb.position.y, -4.5f, 4.5f));
+        move = Vector2.ClampMagnitude(move, 1);
+        Vector3 minScreenBounds = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 0));
+        Vector3 maxScreenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0));
+
+        transform.position = new Vector3(Mathf.Clamp(transform.position.x, minScreenBounds.x + 0.5f, maxScreenBounds.x - 0.5f), 
+                                        Mathf.Clamp(transform.position.y, minScreenBounds.y + 0.5f, maxScreenBounds.y - 0.5f), 0);
     }
 
     void FixedUpdate()
@@ -26,7 +31,7 @@ public class PlayerController : MonoBehaviour
         rb.MovePosition(rb.position + move * speed * Time.fixedDeltaTime);  
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         dead = true;
         deathText.SetActive(true);
